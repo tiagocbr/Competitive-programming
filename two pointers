@@ -1,0 +1,29 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+int sequencia[2000001];
+
+int main(){
+    
+    int N,D,soma=0,res=0;
+    cin>>N>>D;
+    for(int i=0;i<N;i++){
+        int x;
+        cin>>x;
+        sequencia[i]=x;
+        sequencia[i+N]=x;
+}    
+     int i=0;
+     for(int j=0;j<N;j++){
+     for(;soma<D && i-j+1<=N;i++){
+            soma+=sequencia[i];
+     }
+     res+= soma==D;
+     soma-=sequencia[j];
+     }
+     cout<< res;
+}
+
+
+     
+     
