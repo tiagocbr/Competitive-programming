@@ -1,0 +1,47 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+int pedacos[2000001];
+int somas[2000001];
+
+
+int main(){
+     map<int,int> m;
+     int soma=0,res=0;
+     int N,D;
+     cin>>N>>D;
+     for(int i=0;i<N;i++){
+          int x;
+          cin>>x;
+          pedacos[i]=x;
+          pedacos[i+N]=x;
+     }
+     m[0]=1; 
+     for(int i=0;i<N;i++){
+          soma+=pedacos[i];
+          somas[i]=soma;
+          int x=soma-D;
+          if(m.find(x)!=m.end())
+          res+=m[x];
+          if(m.find(soma)!=m.end())
+          m[soma]++;
+          else
+          m[soma]=1;
+          
+     }
+      m[0]--;m[somas[N-1]]--;
+      for(int i=N;i<2*N-1;i++){
+          soma+=pedacos[i];
+          int x=soma-D;
+          if(m.find(x)!=m.end() )
+          res+=m[x];
+          m[somas[i-N]]--;
+          
+     }
+    
+     cout<<res;
+   
+
+}
+     
+     
