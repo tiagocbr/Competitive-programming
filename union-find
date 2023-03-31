@@ -1,0 +1,36 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+
+int pai[100001];
+int peso[100001]={0};
+
+
+int patriarca(int x){
+
+    if(pai[x]==x)
+    return x;
+    else
+    return pai[x]=patriarca(pai[x]);
+}
+
+void fusao(int x,int y){
+      x=patriarca(x);
+      y=patriarca(y);
+      if(peso[x]>peso[y]){
+        pai[y]=x;
+        
+      }
+        if(peso[x]<peso[y]){
+            pai[x]=y;
+          
+        }
+        if(peso[x]==peso[y]){
+            pai[x]=y;
+            peso[y]++;
+        }
+      }
+
+
+
