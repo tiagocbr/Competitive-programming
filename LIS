@@ -1,0 +1,86 @@
+// Longest Increasing Subsequence II
+// Rogério Júnior
+// O(n log n)
+
+#include <cstdio> // scanf e printf
+#include <algorithm> // lower_bound
+#include <vector> // vector
+
+using namespace std; // para uso do C++
+
+#define PB push_back // por simplicidade
+#define MAXN 100100 // defino o valor de MAXN
+
+// declaro s variáveis que vou usar
+vector<int> pilha, seq, resp;
+int n, pos[MAXN], pai[MAXN];
+
+int main(){
+	
+	// leio o número de elementos da sequência
+	scanf("%d", &n);
+	
+	// para cada elemento
+	for(int i=0; i<n; i++){
+		
+		// leio seu valor e guardo em x
+		int x;
+		scanf("%d", &x);
+		
+		// adiciono o valor de x à sequência
+		seq.PB(x);
+		
+		// declaro um iterador que guardará o elemento mais à esquerda de pilha
+		// que não é menor que x
+		vector<int>::iterator it = lower_bound(pilha.begin(), pilha.end(), x);
+		
+		// guardo a posição da pilha em que adicionarei o elemento
+		int p = it-pilha.begin();
+		
+		// se it for o fim do vector, então não há elemento que não seja menor que x
+		// ou seja, todos os topos de pilha são menores ou iguais a x
+		
+		// logo, criamos uma nova pilha e colocamos x no seu topo
+		if(it==pilha.end()) pilha.PB(x);
+		
+		// porém, se it apontar para alguma posição válida do vector
+		// colocamos x no topo desta pilha, substintuindo o valor que it aponta por x
+		else *it = x;
+		
+		// a posição original na sequência do número no topo da pilha p agora é i
+		pos[p]=i;
+		
+		// se o elemento foi inserido na primeira pilha
+		if(p==0) pai[i]=-1; // seu pai será -1
+		
+		// caso contrário, seu pai será a posição do elemento no topo da pilha anterior a ele
+		else pai[i]=pos[p-1];
+	}
+	
+	// no fim, basta imprimir a quantidade de pilhas
+	printf("%d\n", pilha.size());
+	
+	// p será a posição do elemento no topo da última pilha
+	int p = pos[pilha.size()-1];
+	
+	// enquanto p não for -1
+	while(p>=0){
+		
+		// adiciono o elemento na posição p à resposta
+		resp.PB(seq[p]);
+		
+		// e vou para o pai de p
+		p=pai[p];
+	}
+	
+	// inverto a ordem da resposta
+	reverse(resp.begin(), resp.end());
+	
+	// e a imprimo
+	for(int i=0; i<resp.size(); i++) printf("%d ", resp[i]);
+	
+	// seguida da quebra de linha
+	printf("\n");
+	
+	return 0;
+}
