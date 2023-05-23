@@ -1,0 +1,96 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+const int maxn=99999999;
+
+typedef pair<int,int> pii;
+typedef pair<int,pair<int,int>> no;
+
+vector<no> viz[110][110];
+int visitado[110][110];
+int distancia[110][110];
+int matriz[110][110];
+
+void dijkstra(int n){
+     for(int i=1;i<=n;i++){
+          for(int j=1;j<=n;j++){
+               distancia[i][j]=maxn;
+          }
+     }
+     distancia[n][n]=0;
+     priority_queue<no,vector<no>,greater<no>> fila;
+     fila.push({0,{n,n}});
+
+     while(true){
+
+          pii davez;
+          pii atual;
+          bool ok=true;
+          int dist;
+
+          while(!fila.empty()){
+               no x=fila.top();
+               fila.pop();
+               if(visitado[x.second.first][x.second.second]==0){
+                   visitado[x.second.first][x.second.second]=1;
+                   ok=false;
+                   dist=x.first;
+                   davez=x.second;break;
+               }
+          }
+
+          if(ok)break;
+
+          int a=davez.first;
+          int b=davez.second;
+
+          for(int i=0;i<viz[a][b].size();i++){
+               atual={viz[a][b][i].second.first,viz[a][b][i].second.second};
+               if(distancia[atual.first][atual.second]>dist+viz[a][b][i].first){
+                    distancia[atual.first][atual.second]=dist+viz[a][b][i].first;
+                    fila.push({distancia[atual.first][atual.second],atual});
+               }
+          }
+     }
+
+}
+
+int main(){
+     int n;cin>>n;
+
+     for(int i=0;i<110;i++){
+          for(int j=0;j<110;j++){
+               matriz[i][j]=-1;     
+          }
+     }
+      
+     for(int i=1;i<=n;i++){
+          for(int j=1;j<=n;j++){
+               cin>>matriz[i][j];      
+          }
+     }
+
+     for(int i=1;i<=n;i++){
+          for(int j=1;j<=n;j++){
+               if(matriz[i][j-1]!=-1){
+                    viz[i][j].push_back({matriz[i][j-1],{i,j-1}});
+               } 
+               if(matriz[i][j+1]!=-1){
+                    viz[i][j].push_back({matriz[i][j+1],{i,j+1}});
+               } 
+               if(matriz[i+1][j]!=-1){
+                    viz[i][j].push_back({matriz[i+1][j],{i+1,j}});
+               } 
+               if(matriz[i-1][j]!=-1){
+                    viz[i][j].push_back({matriz[i-1][j],{i-1,j}});
+               }      
+          }
+     }
+     dijkstra(n);
+
+     cout<<distancia[1][1];
+
+
+
+
+}
