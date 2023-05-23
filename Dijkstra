@@ -1,96 +1,58 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int maxn=99999999;
-
-typedef pair<int,int> pii;
-typedef pair<int,pair<int,int>> no;
-
-vector<no> viz[110][110];
-int visitado[110][110];
-int distancia[110][110];
-int matriz[110][110];
+int visitado[1010];
+vector<pair<int,int>> viz[1010];
+int distancia[1010];
+const int maxn=1000000000;
 
 void dijkstra(int n){
-     for(int i=1;i<=n;i++){
-          for(int j=1;j<=n;j++){
-               distancia[i][j]=maxn;
-          }
+     for(int i=0;i<=n+1;i++){
+          distancia[i]=maxn;
      }
-     distancia[n][n]=0;
-     priority_queue<no,vector<no>,greater<no>> fila;
-     fila.push({0,{n,n}});
+     distancia[n+1]=0;
+     priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pair<int,int>>> fila;
+     fila.push({0,n+1});
 
      while(true){
-
-          pii davez;
-          pii atual;
           bool ok=true;
-          int dist;
+          int davez;
 
           while(!fila.empty()){
-               no x=fila.top();
+               pair<int,int> x=fila.top();
                fila.pop();
-               if(visitado[x.second.first][x.second.second]==0){
-                   visitado[x.second.first][x.second.second]=1;
-                   ok=false;
-                   dist=x.first;
-                   davez=x.second;break;
+               if(visitado[x.second]==0){
+                    visitado[x.second]==1;
+                    davez=x.second;ok=false;
+                    break;
                }
+
           }
 
           if(ok)break;
 
-          int a=davez.first;
-          int b=davez.second;
-
-          for(int i=0;i<viz[a][b].size();i++){
-               atual={viz[a][b][i].second.first,viz[a][b][i].second.second};
-               if(distancia[atual.first][atual.second]>dist+viz[a][b][i].first){
-                    distancia[atual.first][atual.second]=dist+viz[a][b][i].first;
-                    fila.push({distancia[atual.first][atual.second],atual});
+          for(int i=0;i<viz[davez].size();i++){
+               if(distancia[viz[davez][i].second]>distancia[davez]+viz[davez][i].first){
+                   distancia[viz[davez][i].second]=distancia[davez]+viz[davez][i].first;
+                   fila.push({distancia[viz[davez][i].second],viz[davez][i].second});
                }
           }
      }
-
 }
 
+
 int main(){
-     int n;cin>>n;
+     int n,m;cin>>n>>m;
 
-     for(int i=0;i<110;i++){
-          for(int j=0;j<110;j++){
-               matriz[i][j]=-1;     
-          }
-     }
-      
-     for(int i=1;i<=n;i++){
-          for(int j=1;j<=n;j++){
-               cin>>matriz[i][j];      
-          }
+     for(int i=0;i<m;i++){
+          int x,y,z;cin>>x>>y>>z;
+
+          viz[y].push_back({z,x});
+          viz[x].push_back({z,y});
      }
 
-     for(int i=1;i<=n;i++){
-          for(int j=1;j<=n;j++){
-               if(matriz[i][j-1]!=-1){
-                    viz[i][j].push_back({matriz[i][j-1],{i,j-1}});
-               } 
-               if(matriz[i][j+1]!=-1){
-                    viz[i][j].push_back({matriz[i][j+1],{i,j+1}});
-               } 
-               if(matriz[i+1][j]!=-1){
-                    viz[i][j].push_back({matriz[i+1][j],{i+1,j}});
-               } 
-               if(matriz[i-1][j]!=-1){
-                    viz[i][j].push_back({matriz[i-1][j],{i-1,j}});
-               }      
-          }
-     }
      dijkstra(n);
 
-     cout<<distancia[1][1];
-
-
-
-
+     cout<<distancia[0];
+     
 }
