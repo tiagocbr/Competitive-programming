@@ -1,0 +1,60 @@
+#include <bits/stdc++.h>
+using namespace std;
+const int maxn = 5e4 + 10;
+vector<int> viz[maxn];
+int grau[maxn];
+vector<int> seq;
+set<int> s;
+int grau_0;
+
+int main()
+{
+     int n, m;
+     cin >> n >> m;
+     for (size_t i = 0; i < m; i++)
+     {
+          int a, b;
+          cin >> a >> b;
+          viz[a].push_back(b);
+          grau[b]++;
+     }
+     for (size_t i = 0; i < n; i++)
+     {
+          if (grau[i] == 0)
+          {
+               s.insert(i); // guarda os elementos que ainda nao foram processados mas que ja estao aptos a serem
+                            //aqui usei set porque a questao requeria uma prioridade nos elementos de menor indice na ordenação
+               grau_0++;   //guarda a quantidade de elementos aptos a serem processados  
+          }
+     }
+
+          int size = 0; // guarda a quantidade de elementos ja processados
+
+          while (size < grau_0) // enquanto houver mais elementos aptos a serem processados do que elementos processados
+          {
+               auto it = s.begin();
+               seq.push_back(*it); // seq é o vetor que guarda a ordem da ordenação topologica
+               s.erase(it);
+               int x = seq[size];
+               size++;
+
+               for (size_t i = 0; i < viz[x].size(); i++)
+               {
+                    int y = viz[x][i];
+                    grau[y]--;
+                    if (grau[y] == 0)
+                    {
+                         s.insert(y);
+                         grau_0++;
+                    }
+               }
+          }
+
+          if (size < n)
+               cout << "*";
+          else
+               for (size_t i = 0; i < n; i++)
+               {
+                    cout << seq[i] << endl;
+               }
+}
