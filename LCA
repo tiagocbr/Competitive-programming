@@ -1,0 +1,92 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+const int maxn = 5e4 + 5;
+const int maxl = 20;
+
+int pai[maxn];
+int ancestral[maxn][maxl];
+vector<int> viz[maxn];
+int nivel[maxn];
+int c[maxn];
+int par[maxn];
+
+void dfs(int x)
+{
+
+     for (int i = 0; i < viz[x].size(); i++)
+     {
+          if (nivel[viz[x][i]] == -1)
+          {
+               nivel[viz[x][i]] = nivel[x] + 1;
+               pai[viz[x][i]] = x;
+               dfs(viz[x][i]);
+          }
+     }
+}
+
+int lca(int a, int b)
+{
+     if (nivel[a] < nivel[b]) //Fazendo a ser o de maior nivel
+          swap(a, b);
+
+     for (int i = maxl - 1; i >= 0; i--) //igualando o nivel de a com o nivel de b
+     {
+          if (nivel[a] - (1 << i) >= nivel[b])
+               a = ancestral[a][i];
+     }
+     if(a==b)return a;
+
+     for (int i = maxl - 1; i >= 0; i--)  //chegando no ultimo ancestral antes do menor ancestral comum 
+     {
+          if (ancestral[a][i] != ancestral[b][i] && ancestral[a][i] != -1)
+          {
+               a = ancestral[a][i];
+               b = ancestral[b][i];
+          }
+     }
+     return pai[a];
+}
+
+int main(){
+     int n;cin>>n;
+     for(int i=1;i<=n;i++){   
+          int x;cin>>x;
+          if(c[x]!=0){
+               par[c[x]]=i;
+               par[i]=c[x];
+          }
+          c[x]=i;
+     }
+     for(int i=1;i<=n-1;i++){
+          int x,y;cin>>x>>y;
+          viz[x].push_back(y);
+          viz[y].push_back(x);
+     }
+     for(int i=0;i<maxn;i++){
+          pai[i]=-1;
+          nivel[i]=-1;
+     }
+     nivel[1]=0;
+     dfs(1);
+     for(int i=1;i<=n;i++){
+          ancestral[i][0]=pai[i];
+     }
+
+     for(int i=1;i<=maxl-1;i++){
+          for(int j=1;j<=n;j++){
+               if(ancestral[j][i-1]!=-1)
+                    ancestral[j][i]=ancestral[ancestral[j][i-1]][i-1];
+          }
+     }
+
+     long long int res=0;
+     for(int i=1;i<=n;i++){
+          int a=i;
+          int b=par[a];
+          res+=nivel[a]+nivel[b]-2*nivel[lca(a,b)];
+
+     }
+     cout<<res/2;
+     
+}
