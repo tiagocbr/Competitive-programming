@@ -1,0 +1,90 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+const int maxn=100010;
+
+int seq[maxn];
+int bit[maxn];
+int n;
+
+void build(int i,int val){
+    int x=i;
+    int v=val;
+    if(val==0)v=2;
+    if(val>0)v=1;
+    if(val<0)v=-1;
+    while(x<=n){
+        bit[x]=bit[x]*v;
+        x+=(x&-x);
+    }
+}
+void update(int i,int val){
+    int x=i;
+    int v=val;
+    int guard=seq[i];
+    
+    if(val==0)v=2;
+    if(val>0)v=1;
+    if(val<0)v=-1;
+    seq[i]=v;
+    while(x<=n){
+        bit[x]=bit[x]*v/guard;
+        
+        x+=(x&-x);
+    }
+}
+
+int query(int i,int j){
+
+    if(i==j)return seq[i];
+    if(j-(j&-j)+1==i){
+        return bit[j];
+    }
+    if(j-(j&-j)+1>i){
+        return bit[j]*query(i,j-(j&-j));
+    }
+    if(j-(j&-j)+1<i){
+        return seq[j]*query(i,j-1);
+    }
+
+}
+
+int main(){
+
+    while(scanf("%d",&n)!=EOF){
+    int k;
+    cin>>k;
+    for(int i=1;i<=n;i++)bit[i]=1;
+    for(int i=1;i<=n;i++){
+        int x;
+        cin>>x;
+        if(x>0)seq[i]=1;
+        if(x<0)seq[i]=-1;
+        if(x==0)seq[i]=2;
+        build(i,x);
+    }
+    string produto;
+    for(int i=1;i<=k;i++){
+      int I,V;
+      char C;
+      cin>>C>>I>>V;
+      if(C=='C'){
+         update(I,V);
+      }
+      if(C=='P'){
+        int p=query(I,V);
+        if(p==1)produto.push_back('+');
+        if(p==-1)produto.push_back('-');
+        if(p!=1 && p!=-1)produto.push_back('0');
+      }
+    }
+
+    cout<<produto<<endl;
+    }
+
+}
+        
+    
+    
+

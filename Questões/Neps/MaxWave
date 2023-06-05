@@ -1,0 +1,40 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+const int maxn=1e5 +10;
+int m;
+vector<int> pilha,seq,pilha2;
+int LDS[maxn],LIS[maxn];
+
+int main(){
+    cin>>m;
+    for(int i=0;i<m;i++){
+        int x;cin>>x;
+        seq.push_back(x);
+    }
+    for(int i=0;i<m;i++){
+
+        vector<int>::iterator it=lower_bound(pilha.begin(),pilha.end(),seq[i]);
+        int pos=it-pilha.begin();
+        if(it==pilha.end())pilha.push_back(seq[i]);
+        else pilha[pos]=seq[i];
+        LIS[i]=pos+1;
+    }
+    reverse(seq.begin(),seq.end());
+    for(int i=0;i<m;i++){
+        
+
+        vector<int>::iterator it=lower_bound(pilha2.begin(),pilha2.end(),seq[i]);
+        int pos=it-pilha2.begin();
+        if(it==pilha2.end())pilha2.push_back(seq[i]);
+        else pilha2[pos]=seq[i];
+        LDS[i]=pos+1;
+    }
+    reverse(LDS,LDS+m);
+    int maxwave=0;
+    for(int i=0;i<m;i++){
+        maxwave=max(maxwave,2*min(LIS[i],LDS[i])-1);
+
+    }
+    cout<<maxwave;
+}

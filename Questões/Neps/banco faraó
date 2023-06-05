@@ -1,0 +1,78 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+#define esq (2*no)
+#define dir (2*no+1)
+#define meio ((i+j)/2)
+
+const int n_max=100010;
+int lista[n_max];
+
+pair<int,int> operator+(const pair<int,int>& p1,const pair<int,int>& p2){
+  return make_pair(p1.first+p2.first,p1.second+p2.second);
+}
+
+struct NO{
+  pair<int,int> pre,suf,sum,mx;
+  
+};
+
+NO tree[4*n_max];
+
+
+  NO join(NO a,NO b){
+    NO x;
+    x.pre=max(a.pre,a.sum+b.pre);
+    x.suf=max(b.suf,b.sum+a.suf);
+    x.mx=max(b.mx,max(a.mx,a.suf+b.pre));
+    x.sum=a.sum+b.sum;
+    return x;
+  }
+
+  NO query(int no,int i,int j,int a,int b){
+    NO null;null.sum=make_pair(0,0);null.suf=null.mx=null.pre=make_pair((-1)*pow(10,9)-10,0);
+    if(i>=a && j<=b) return tree[no];
+    if(j<a || i>b) return null;
+    if(b<=meio) return query(esq,i,meio,a,b);
+    if(a>meio) return query (dir,meio+1,j,a,b);
+    return join(query(esq,i,meio,a,b),query(dir,meio+1,j,a,b));
+  }
+
+  void build(int no,int i,int j){
+    if(i==j){
+      tree[no].pre=tree[no].suf=tree[no].mx=tree[no].sum=make_pair(lista[i],1);return;
+
+    }
+    build(esq,i,meio);build(dir,meio+1,j);
+    tree[no]=join(tree[esq],tree[dir]);
+
+  }
+
+
+int main(){
+
+  ios_base::sync_with_stdio(false) ; cin.tie(NULL) ;
+
+  int t;cin>>t;
+  for(int w=0;w<t;w++){
+      int n;
+      cin>>n;
+      for(int i=1;i<=n;i++){
+        int x;
+        cin>>x;
+        lista[i]=x;
+      }
+      build(1,1,n);
+      int q;
+      cin>>q;
+      for(int i=0;i<q;i++){
+        int a,b;
+        cin>>a>>b;
+        pair<int,int> res;
+        res=(query(1,1,n,a,b)).mx;
+        cout<<res.first<<" "<<res.second<<endl;
+      }
+  }
+   
+}

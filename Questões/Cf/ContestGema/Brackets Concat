@@ -1,0 +1,88 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+const int maxn=5e5+5;
+string bracket[maxn];
+vector<int> corretas;
+multiset<int> qtd_abre;   // guarda a quantidade sobressalente de colchetes que abrem das bracket sequences
+multiset<int> qtd_fecha;  // guarda aquantidade sobressalente de colchetes que fecham das bracket sequences  
+
+bool itscorrect(string s){
+    vector<int> pilha;
+    for(int i=0;i<s.size();i++){
+        if(s[i]=='(')pilha.push_back('(');
+        else
+        if(!pilha.empty())pilha.pop_back();
+        else
+        return false;
+    }
+    if(!pilha.empty())return false;
+    else return true;
+
+}
+
+pair<int,int> colchetes_sobressalentes(string s){
+    vector<int> pilha;
+    int fecha=0;
+    for(int i=0;i<s.size();i++){
+        if(s[i]=='(')pilha.push_back('(');
+        else
+        if(!pilha.empty())pilha.pop_back();
+        else
+        fecha++;
+    }
+    return {pilha.size(),fecha};
+    
+
+}
+
+int main(){
+    int n;cin>>n;
+
+    int res=0;
+
+    for(int i=0;i<n;i++){
+        cin>>bracket[i];
+        if(itscorrect(bracket[i])) // se a sequencia ja está correta adiciona no vetor corretas
+        corretas.push_back(i);
+        else{
+            pair<int,int> x=colchetes_sobressalentes(bracket[i]);
+            if(x.first>0 && x.second>0); //se a sequencia possui colchetes sobressalentes que abrem e que fecham ao mesmo tempo,é impossível formar um par correto
+            else{
+            if(x.first>0)qtd_abre.insert(x.first); //se a sequencia possui só colchetes sobressalentes que abrem
+            if(x.second>0)qtd_fecha.insert(x.second); //se a sequencia possui só colchetes sobressalentes que fecham
+            }
+        }
+        
+    }
+
+
+    for(multiset<int>::iterator it=qtd_abre.begin();;){
+        int x=*it;
+        if(qtd_fecha.find(x)!=qtd_fecha.end()){ // se existe 2 sequencias que se complementam com essa quantidade de colchetes sobressalentes
+            res+=min(qtd_fecha.count(x),qtd_abre.count(x));  // adiciona a quantidade dessas sequencias ao resultado
+            qtd_fecha.erase(x);qtd_abre.erase(x);    //apaga essas sequencias dos sets
+            if(!qtd_abre.empty())     
+            it=qtd_abre.begin();    //redefine o iterador após apagar elementos
+            else
+            break;   //caso a sequencia fique vazia acaba o laço
+            
+        }
+        else{
+            qtd_abre.erase(x);
+            if(!qtd_abre.empty())
+            it=qtd_abre.begin();
+            else
+            break;
+
+        }
+
+    }
+
+    res+=corretas.size()/2;
+
+    cout<<res;
+
+
+
+}
