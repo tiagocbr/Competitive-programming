@@ -7,45 +7,85 @@
 
 using namespace std;
 
-const int maxn = 1e5+10;
+#define esq (2 * no)
+#define dir (2 * no + 2)
+#define meio ((i + j) / 2)
 
-int vet[maxn], tree[4*maxn];
+const int maxn = 1e5 + 10;
 
-void build(int node, int l, int r){
+int vet[maxn];
+struct no
+{
+     int val = 0;
+};
 
-    if(l==r){
-        tree[node]=vet[l];
-        return;
-    }
-    int mid = (l+r)/2;
+no tree[4 * maxn];
 
-    build(2*node+1,l,mid);
-    build(2*node+2,mid+1,r);
-
-    tree[node] = tree[2*node+1] + tree[2*node+2];
+no join(no a, no b)
+{
+     no res;
+     res.val = a.val + b.val;
+     return res;
 }
 
-void update(int node, int tl, int tr, int idx, int v){
+no null;
 
-    if(tl==tr){
-        tree[node]=v;
-        return;
-    }
-    int mid = (tl+tr)/2;
+void build(int no, int i, int j)
+{
 
-    if(tl<=idx and idx<=mid) update(2*node+1,tl,mid,idx,v);
-    else update(2*node+2,mid+1,tr,idx,v);
+     if (i == j)
+     {
+          tree[no].val = vet[i];
+          return;
+     }
 
-    tree[node] = tree[2*node+1] + tree[2*node+2];
+     build(esq, i, meio);
+     build(dir, meio + 1, j);
+
+     tree[no] = join(tree[esq], tree[dir]);
 }
 
-int query(int node, int tl, int tr, int l, int r){
+void update(int no, int i, int j, int idx, int v)
+{
 
-    if(r<tl or l>tr) return 0;
+     if (i == j)
+     {
+          tree[no].val = v;
+          return;
+     }
 
-    if(l<=tl and r>=tr) return tree[node];
+     if (i <= idx && idx <= meio)
+          update(esq, i, meio, idx, v);
+     else
+          update(dir, meio + 1, j, idx, v);
 
-    int mid = (tl+tr)/2;
+     tree[no] = join(tree[esq], tree[dir]);
+}
 
-    return query(2*node+1, tl, mid, l, r)+query(2*node+2, mid+1, tr, l, r);
+no query(int no, int i, int j, int a, int b)
+{
+
+     if (b < i || a > j)
+          return null;
+
+     if (i >= a && j <= b)
+          return tree[no];
+
+     return join(query(esq, i, meio, a, b), query(dir, meio + 1, j, a, b));
+}
+
+int main()
+{
+     int n;
+     cin >> n;
+
+     null.val = 0;
+     for (int i = 0; i < n; i++)
+     {
+          cin >> vet[i];
+     }
+
+     build(1, 0, n - 1);
+
+     cout << query(1, 0, n - 1, 5, n - 2).val;
 }
