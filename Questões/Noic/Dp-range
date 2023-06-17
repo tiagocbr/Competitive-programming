@@ -9,7 +9,7 @@ int vet[maxn];
 
 int solve(int l, int r)
 {
-     if (dp[l][r] != -1)
+     if (dp[l][r] != -2)
      {
           return dp[l][r];
      }
@@ -23,7 +23,7 @@ int solve(int l, int r)
           int a = solve(l, i);
           int b = solve(i + 1, r);
 
-          if (a == b)
+          if (a == b && a!=-1)
           {
                mx = max(mx, a + 1)
           }
@@ -42,7 +42,7 @@ int main()
      {
           for (int j = 0; j < maxn; j++)
           {
-               dp[i][j] = -1;
+               dp[i][j] = -2;
           }
      }
      int mx = 0;
