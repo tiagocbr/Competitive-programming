@@ -1,0 +1,65 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+long long dp[20][19][19][2]; // idx n m tight
+vector<long long> esquerda;
+vector<long long> direita;
+long long n, m;
+long long l, r;
+
+void getdigits(long long a, vector<long long> &num)
+{
+     if (a == 0)
+     {
+          num.push_back(0);
+     }
+
+     while (a)
+     {
+          num.push_back(a % 10);
+          a /= 10;
+     }
+}
+
+long long solve(long long idx, long long fn, long long fm, long long tight, const vector<long long> &num)
+{
+     if (idx == -1)
+     {
+          if (fn == n || fm == m)
+               return 1;
+          else
+               return 0;
+     }
+     if (fn > n && fm > m)
+     {
+          return 0;
+     }
+     if (dp[idx][fn][fm][tight] != -1 && tight == 0)
+     {
+          return dp[idx][fn][fm][tight];
+     }
+
+     long long k = (tight) ? num[idx] : 9;
+     long long res = 0;
+     for (long long i = 0; i <= k; i++)
+     {
+          res += solve(idx - 1, i == 4 ? fn + 1 : fn, i == 7 ? fm + 1 : fm, i == num[idx] ? tight : 0, num);
+     }
+
+     if (tight == 0)
+          dp[idx][fn][fm][tight] = res;
+
+     return res;
+}
+
+int main()
+{
+     cin >> n >> m;
+     cin >> l >> r;
+     getdigits(l - 1, esquerda);
+     getdigits(r, direita);
+     memset(dp, -1, sizeof(dp));
+     long long x = solve(esquerda.size() - 1, 0, 0, 1, esquerda);
+     long long y = solve(direita.size() - 1, 0, 0, 1, direita);
+     cout << y - x;
+}
