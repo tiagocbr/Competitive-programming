@@ -2,7 +2,7 @@
 using namespace std;
 
 int visitado[1010];
-vector<pair<int,int>> viz[1010];
+vector<pair<int,int>> viz;
 int distancia[1010];
 const int maxn=1000000000;
 
