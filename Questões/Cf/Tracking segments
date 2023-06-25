@@ -1,0 +1,72 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define meio ((ini + fim) / 2)
+
+int main()
+{
+     int t;
+     cin >> t;
+     while (t--)
+     {
+          int n, m;
+          cin >> n >> m;
+          vector<pair<int, int>> seg(m + 1);
+          vector<int> arr(n + 1);
+          for (int i = 1; i <= m; i++)
+          {
+               int x, y;
+               cin >> x >> y;
+               seg[i] = {x, y};
+          }
+          int q;
+          cin >> q;
+          vector<int> changes(q);
+          for (int i = 0; i < q; i++)
+          {
+               cin >> changes[i];
+          }
+          int ini = 0;
+          int fim = q - 1;
+          vector<int> pref;
+          bool ok2 = true;
+          int resp = -2;
+          while (ini <= fim && ok2)
+          {
+               bool ok = true;
+               arr.assign(n + 1, 0);
+               pref.assign(n + 1, 0);
+               int sum = 0;
+               for (int i = 0; i <= meio; i++)
+               {
+                    arr[changes[i]] = 1;
+               }
+               for (int i = 1; i <= n; i++)
+               {
+                    sum += arr[i];
+                    pref[i] = sum;
+               }
+               for (int i = 1; i <= m; i++)
+               {
+                    int qtd = pref[seg[i].second] - pref[seg[i].first - 1];
+                    int size = seg[i].second - seg[i].first + 1;
+                    if (qtd > size / 2)
+                    {
+                         if (ini == fim)
+                         {
+                              ok2 = false;
+                              resp = ini;
+                              break;
+                         }
+                         fim = meio;
+                         ok = false;
+                         break;
+                    }
+               }
+               if (ok)
+               {
+                    ini = meio + 1;
+               }
+          }
+          cout << resp + 1 << endl;
+     }
+}
