@@ -1,0 +1,126 @@
+#include <bits/stdc++.h>
+using namespace std;
+const int maxl = 20;
+const int maxn = 2e5 + 5;
+
+struct no
+{
+     int mx_suf, mn_suf, mx, mn, sum, mx_pre, mn_pre;
+
+     no(int el = 0)
+     {
+          sum = el;
+          mx_suf = mx = mx_pre = max(el, 0);
+          mn_suf = mn = mn_pre = min(el, 0);
+     }
+};
+
+no merge(no &a, no &b)
+{
+     no res;
+     res.mx_suf = max(b.mx_suf, b.sum + a.mx_suf);
+     res.mn_suf = min(b.mn_suf, b.sum + a.mn_suf);
+     res.sum = b.sum + a.sum;
+     res.mx = max(max(a.mx, b.mx), a.mx_suf + b.mx_pre);
+     res.mn = min(min(a.mn, b.mn), b.mn_pre + a.mn_suf);
+     res.mx_pre = max(a.mx_pre, a.sum + b.mx_pre);
+     res.mn_pre = min(a.mn_pre, a.sum + b.mn_pre);
+     return res;
+}
+
+int main()
+{
+     int t;
+     cin >> t;
+     while (t--)
+     {
+          int n;
+          cin >> n;
+          vector<int> distancia(n + 5);
+          vector<vector<int>> up(maxl, vector<int>(n + 5)); // up[i][j] guarda o 2^i ancestral de j
+          vector<vector<no>> ans(maxl, vector<no>(n + 5));  // ans[i][j] guarda as informações do caminho entre (up[i][j]+1) e j
+          distancia[1] = 1;
+          int size = 1;
+          ans[0][size] = no(1);
+          for (int i = 1; i < maxl; i++)
+          {
+               ans[i][size] = merge(ans[i - 1][up[i - 1][size]], ans[i - 1][size]); // merge entre as duas metades do caminho
+          }
+          for (int i = 0; i < n; i++)
+          {
+               char c;
+               cin >> c;
+               if (c == '+')
+               {
+                    int v, x;
+                    cin >> v >> x;
+                    size++;
+                    distancia[size] = distancia[v] + 1;
+                    up[0][size] = v;
+                    for (int i = 1; i < maxl; i++)
+                    {
+                         up[i][size] = up[i - 1][up[i - 1][size]];
+                    }
+                    ans[0][size] = no(x);
+                    for (int i = 1; i < maxl; i++)
+                    {
+                         ans[i][size] = merge(ans[i - 1][up[i - 1][size]], ans[i - 1][size]);
+                    }
+               }
+               else
+               {
+                    int u, v, k;
+                    cin >> u >> v >> k;
+                    if (distancia[u] > distancia[v])
+                    {
+                         swap(u, v);
+                    }
+                    no a, b;
+                    for (int i = maxl - 1; i >= 0; i--) // igualando as distancias de u e v e armazenando as informações do caminho em b
+                    {
+                         if (distancia[up[i][v]] >= distancia[u])
+                         {
+                              b = merge(ans[i][v], b);
+                              v = up[i][v];
+                         }
+                    }
+                    if (u == v) // se u for um ancestral de v
+                    {
+                         b = merge(ans[0][v], b);
+                         if (k <= b.mx && k >= b.mn)
+                         {
+                              cout << "yes" << endl;
+                         }
+                         else
+                              cout << "no" << endl;
+
+                         continue;
+                    }
+                    for (int i = maxl - 1; i >= 0; i--)
+                    {
+                         if (up[i][v] != up[i][u])
+                         {
+                              b = merge(ans[i][v], b);
+                              a = merge(ans[i][u], a);
+                              v = up[i][v];
+                              u = up[i][u];
+                         }
+                    }
+                    a = merge(ans[1][u], a);
+                    b = merge(ans[0][v], b);
+
+                    // swap para fazer o sufixo de a se conectar com o prefixo de b e entao fazer o merge
+                    swap(a.mx_pre, a.mx_suf);
+                    swap(a.mn_pre, a.mn_suf);
+                    no resp = merge(a, b);
+
+                    if (k <= resp.mx && k >= resp.mn)
+                    {
+                         cout << "yes" << endl;
+                    }
+                    else
+                         cout << "no" << endl;
+               }
+          }
+     }
+}
