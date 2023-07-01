@@ -1,0 +1,108 @@
+#include <bits/stdc++.h>
+using namespace std;
+const int maxn = 1e3 + 3;
+vector<int> viz[maxn];
+vector<int> viz_r[maxn];
+vector<int> viz_cond[maxn];
+int root[maxn];
+int peso[maxn];
+int visitados[maxn];
+vector<int> ord;
+vector<int> componente;
+int dp[maxn];
+void dfs1(int x)
+{
+     visitados[x] = 1;
+
+     for (int i = 0; i < viz[x].size(); i++)
+     {
+          int atual = viz[x][i];
+          if (!visitados[atual])
+          {
+               dfs1(atual);
+          }
+     }
+     ord.push_back(x);
+}
+
+void dfs2(int x)
+{
+     visitados[x] = 1;
+     componente.push_back(x);
+
+     for (int i = 0; i < viz_r[x].size(); i++)
+     {
+          int atual = viz_r[x][i];
+          if (!visitados[atual])
+          {
+               dfs2(atual);
+          }
+     }
+}
+
+int dfs3(int x)
+{
+     if (dp[x] != 0)
+     {
+          return dp[x];
+     }
+     int res = peso[x];
+     for (auto y : viz_cond[x])
+     {
+          res = max(res, dfs3(y) + peso[x]);
+     }
+     return dp[x] = res;
+}
+
+int main()
+{
+     int n, m;
+     cin >> n >> m;
+     for (int i = 0; i < m; i++)
+     {
+          int x, y;
+          cin >> x >> y;
+          viz[x].push_back(y);
+          viz_r[y].push_back(x);
+     }
+     for (int i = 1; i <= n; i++)
+     {
+          if (!visitados[i])
+               dfs1(i);
+     }
+     reverse(ord.begin(), ord.end());
+     memset(visitados, 0, sizeof(visitados));
+     for (int i = 0; i < ord.size(); i++)
+     {
+          int u = ord[i];
+          if (!visitados[u])
+          {
+               dfs2(u);
+               int x = componente.front();
+               for (auto y : componente)
+               {
+                    root[y] = x;
+                    peso[x]++;
+               }
+               componente.clear();
+          }
+     }
+     for (int i = 1; i <= n; i++)
+     {
+          for (auto u : viz[i])
+          {
+               int root1 = root[i];
+               int root2 = root[u];
+               if (root1 != root2)
+               {
+                    viz_cond[root1].push_back(root2);
+               }
+          }
+     }
+     int mx = 0;
+     for (int i = 1; i <= n; i++)
+     {
+          mx = max(mx, dfs3(i));
+     }
+     cout << mx;
+}
