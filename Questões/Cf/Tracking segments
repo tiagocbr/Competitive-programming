@@ -1,3 +1,5 @@
+// Questao que da um array de zeros e pede a partir de qual mudança tem pelo menos 1 segmento beautiful=com mais 1 doq zero,usa binary search
+
 #include <bits/stdc++.h>
 using namespace std;
 #define meio ((ini + fim) / 2)

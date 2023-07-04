@@ -1,36 +1,44 @@
 #include <bits/stdc++.h>
 using namespace std;
- 
-int t,n,k,res,x;
+
+int t, n, k, res, x;
 int l[200010];
 int r[200010];
- 
-const int maxn=2e9;
- 
-int main(){
-    cin>>t;
-    while(t--){
-        cin>>n>>k;res=maxn;x=0;
-        for(int i=1;i<=n;i++){
-            cin>>l[i];
+
+const int maxn = 2e9;
+
+int main()
+{
+    cin >> t;
+    while (t--)
+    {
+        cin >> n >> k;
+        res = maxn;
+        x = 0;
+        for (int i = 1; i <= n; i++)
+        {
+            cin >> l[i];
         }
-        for(int i=1;i<=n;i++){
-            cin>>r[i];
+        for (int i = 1; i <= n; i++)
+        {
+            cin >> r[i];
         }
-		for(int i=1;i<=n;i++){
-			x+=(l[i]==r[i]);
-            k-=r[i]-l[i]+1;
-            if(k<=0){
-                res=min(res,r[i]+k+2*i-min(x,-k));
-				if(-k>=x){
-					break;
-				}
-				
+        for (int i = 1; i <= n; i++)
+        {
+            x += (l[i] == r[i]);
+            k -= r[i] - l[i] + 1;
+            if (k <= 0)
+            {
+                res = min(res, r[i] + k + 2 * i - min(x, -k));
+                if (-k >= x)
+                {
+                    break;
+                }
             }
-		}
-        if(res==maxn)
-        cout<<"-1"<<endl;
+        }
+        if (res == maxn)
+            cout << "-1" << endl;
         else
-        cout<<res<<endl;
+            cout << res << endl;
     }
 }

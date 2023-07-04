@@ -1,3 +1,5 @@
+// Questao que usa LCA para saber se em um determinado segmento da arvore tem um caminho de custo k
+
 #include <bits/stdc++.h>
 using namespace std;
 const int maxl = 20;

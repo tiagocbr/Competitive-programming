@@ -1,79 +1,88 @@
+// Serao escolhidos 2 times da seguinte maneira: o lider de cada time ira escolher o jogador de maior habilidade e seus K adjacentes
+// Usei um artificil de colocar como valor de uma pessoa ja escolhida um numero negativo correspondente a proxima posição livre
+
 #include <bits/stdc++.h>
 using namespace std;
- 
-const int maxn=2e5+5;
- 
+
+const int maxn = 2e5 + 5;
+
 set<int> team[3];
 vector<int> row(maxn);
 int idx[maxn];
 set<int> maxhb;
- 
- 
-int main(){
-    int n,k;
-    cin>>n>>k;
-    for(int i=1;i<=n;i++){
-        int x;cin>>x;
-        row[i]=x;
-        idx[x]=i;
+
+int main()
+{
+    int n, k;
+    cin >> n >> k;
+    for (int i = 1; i <= n; i++)
+    {
+        int x;
+        cin >> x;
+        row[i] = x;
+        idx[x] = i;
         maxhb.insert(x);
     }
- 
- 
-    int mx=n;int tm=1;int restou=n;
-    while(restou>0){
- 
+
+    int mx = n;
+    int tm = 1;
+    int restou = n;
+    while (restou > 0)
+    {
+
         maxhb.erase(mx);
-        
-        
- 
-        //pegando os k elementos posteriores
- 
-        int p=idx[mx];row[n+1]=1;int guard1=-n-1;
-        for(int i=0;i<=k && p<=n;i++){
+
+        // pegando os k elementos posteriores
+
+        int p = idx[mx];
+        row[n + 1] = 1;
+        int guard1 = -n - 1;
+        for (int i = 0; i <= k && p <= n; i++)
+        {
             team[tm].insert(p);
             restou--;
             maxhb.erase(row[p]);
-            if(row[p+1]<=0)
-            p=-row[p+1];
+            if (row[p + 1] <= 0)
+                p = -row[p + 1];
             else
-            p++;
-            guard1=p;
-            
+                p++;
+            guard1 = p;
         }
 
- 
-        //pegando os k elementos anteriores
-        p=idx[mx];int guard2=0;
-        for(int i=0;i<=k && p>=1;i++){
+        // pegando os k elementos anteriores
+        p = idx[mx];
+        int guard2 = 0;
+        for (int i = 0; i <= k && p >= 1; i++)
+        {
             restou--;
             team[tm].insert(p);
             maxhb.erase(row[p]);
-            if(row[p-1]<=0)
-            p=-row[p-1];
+            if (row[p - 1] <= 0)
+                p = -row[p - 1];
             else
-            p--;
-            guard2=p;
+                p--;
+            guard2 = p;
         }
         restou++;
-        row[guard2+1]=-guard1;
-        row[guard1-1]=-guard2;
+        row[guard2 + 1] = -guard1;
+        row[guard1 - 1] = -guard2;
 
-            
-       
-        if(!maxhb.empty()){
-            set<int>::iterator it3=prev(maxhb.end());
-            mx=(*it3);
+        if (!maxhb.empty())
+        {
+            set<int>::iterator it3 = prev(maxhb.end());
+            mx = (*it3);
         }
-        if(tm==1)tm=2;
-        else
-        if(tm==2)tm=1;
+        if (tm == 1)
+            tm = 2;
+        else if (tm == 2)
+            tm = 1;
     }
- 
-    for(int i=1;i<=n;i++){
-        if(team[1].find(i)!=team[1].end())cout<<"1";
-        if(team[2].find(i)!=team[2].end())cout<<"2";
+
+    for (int i = 1; i <= n; i++)
+    {
+        if (team[1].find(i) != team[1].end())
+            cout << "1";
+        if (team[2].find(i) != team[2].end())
+            cout << "2";
     }
 }
-    
-    
