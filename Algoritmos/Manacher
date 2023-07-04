@@ -1,0 +1,70 @@
+#include <bits/stdc++.h>
+using namespace std;
+const int maxn = 1e5 + 5;
+
+int p[maxn];
+
+int main()
+{
+     string s;
+     cin >> s;
+     string t;
+     for (auto c : s)
+     {
+          t.push_back('#');
+          t.push_back(c);
+     }
+     t += "#";
+     int n = t.size();
+     s = '$' + t + '^';
+
+     int l = 1, r = 1, res = 0;
+     for (int i = 1; i <= n; i++)
+     {
+          if (i >= r)
+          {
+               while (s[i - p[i]] == s[i + p[i]])
+               {
+                    p[i]++;
+               }
+               if (i + p[i] > r)
+               {
+                    l = i - p[i];
+                    r = i + p[i];
+               }
+               // p[2i+1]=2even[i]+1 e p[2i]=2odd[i]
+               if (i % 2 != 0)
+               {
+                    res += (p[i] - 1) / 2;
+               }
+               else
+               {
+                    res += p[i] / 2;
+               }
+          }
+          else
+          {
+               int meio = (l + r) / 2;
+               int mirror = l + r - i;
+               p[i] = min(p[mirror], r - i);
+               while (s[i - p[i]] == s[i + p[i]])
+               {
+                    p[i]++;
+               }
+               if (i + p[i] > r)
+               {
+                    l = i - p[i];
+                    r = i + p[i];
+               }
+               if (i % 2 != 0)
+               {
+                    res += (p[i] - 1) / 2;
+               }
+               else
+               {
+                    res += p[i] / 2;
+               }
+          }
+     }
+     cout << res;
+}
