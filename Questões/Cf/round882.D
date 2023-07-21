@@ -26,23 +26,16 @@ int main()
 
      for (int i = 0; i < m; i++)
      {
-          int direita = intervalo[i].first;
-          int esquerda = intervalo[i].second;
-          if (ai.lower_bound(direita) == ai.end())
+          int esquerda = intervalo[i].first;
+          int direita = intervalo[i].second;
+          auto it = ai.lower_bound(esquerda);
+          while (it != ai.end() && *it <= direita)
           {
-               continue;
-          }
-          direita = *ai.lower_bound(direita);
-          while (direita <= esquerda)
-          {
-               arr.push_back(direita);
-               idx[direita] = arr.size() - 1;
-               ai.erase(direita);
-               if (ai.lower_bound(direita) == ai.end())
-               {
-                    break;
-               }
-               direita = *ai.lower_bound(direita);
+               arr.push_back(*it);
+               idx[*it] = arr.size() - 1;
+               int guard = *it;
+               it++;
+               ai.erase(guard);
           }
      }
      int sobra = 0;
@@ -66,35 +59,8 @@ int main()
           int x;
           cin >> x;
           x--;
-          if (idx[x] == -1)
-          {
-               size += s[x] == '0';
-               size -= s[x] == '1';
-               s[x] = (s[x] == '0' ? '1' : '0');
-               int temp = sizereal;
-               sizereal = size <= arr2.size() ? size : arr2.size();
-               if (sizereal != temp)
-               {
-                    if (sizereal > temp)
-                    {
-                         if (arr2[sizereal - 1] == 1)
-                         {
-                              qtd++;
-                         }
-                    }
-                    else
-                    {
-                         if (arr2[sizereal] == 1)
-                         {
-                              qtd--;
-                         }
-                    }
-               }
-               cout << sizereal - qtd << endl;
-               continue;
-          }
-          int c = arr2[idx[x]];
-          if (idx[x] <= sizereal - 1)
+          int c = idx[x] == -1 ? s[x] - '0' : arr2[idx[x]];
+          if (idx[x] != -1 && idx[x] <= sizereal - 1)
           {
                qtd += (c == 0);
                qtd -= (c == 1);
@@ -103,7 +69,10 @@ int main()
           size -= (c == 1);
           int temp2 = sizereal;
           sizereal = size <= arr.size() ? size : arr.size();
-          arr2[idx[x]] = !arr2[idx[x]];
+          if (idx[x] != -1)
+               arr2[idx[x]] = !arr2[idx[x]];
+          else
+               s[x] = s[x] == '0' ? '1' : '0';
           if (sizereal != temp2)
           {
                if (sizereal > temp2)
