@@ -1,0 +1,39 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int dp[302][90002];
+int pref[302][90002];
+int n, k, p;
+const int MOD = 1e9 + 7;
+
+void iterativo()
+{
+
+    for (int i = p + 1; i <= n * k; i++)
+    {
+        dp[n + 1][i] = 1;
+        pref[n + 1][i] = pref[n + 1][i - 1] + dp[n + 1][i];
+    }
+
+    for (int i = n; i >= 1; i--)
+    {
+        for (int j = i - 1; j <= (i - 1) * k; j++)
+        {
+            dp[i][j] = (pref[i + 1][j + k] - pref[i + 1][j] + MOD) % MOD;
+            if (j == 0)
+                pref[i][j] = dp[i][j];
+            else
+                pref[i][j] = (pref[i][j - 1] + dp[i][j]) % MOD;
+        }
+    }
+}
+
+int main()
+{
+    ios::sync_with_stdio(0);
+    cin.tie(0);
+
+    cin >> n >> k >> p;
+    iterativo();
+    cout << dp[1][0] << '\n';
+}
