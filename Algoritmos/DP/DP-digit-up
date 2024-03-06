@@ -1,3 +1,4 @@
+//Questao que quer achar quantos numeros entre um determinado intervalo tem o algarismo n aparecendo 4 vezes e o m aparecendo 7 vezes
 #include <bits/stdc++.h>
 using namespace std;
 
