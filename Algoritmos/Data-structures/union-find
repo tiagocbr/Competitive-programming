@@ -7,6 +7,7 @@ int pai[100001];
 int peso[100001]={0};
 
 
+
 int patriarca(int x){
 
     if(pai[x]==x)

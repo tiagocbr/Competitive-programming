@@ -7,6 +7,7 @@
 
 using namespace std;
 
+
 #define esq (2 * no)
 #define dir (2 * no + 1)
 #define meio ((i + j) / 2)
