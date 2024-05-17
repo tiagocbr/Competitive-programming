@@ -1,0 +1,96 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define int long long
+const int maxn=1e5+10;
+#define esq (2*no)
+#define dir (2*no+1)
+#define meio (i+j)/2
+vector<int> arr(maxn);
+struct node{
+  int max=0;
+  int sum=0;
+};
+node nulo;
+node tree[4*maxn];
+node join(node A,node B){
+  node res;
+  res.sum=A.sum+B.sum;
+  res.max=max(A.max,B.max);
+  return res;
+}
+void build(int no,int i,int j){
+  if(i==j){
+    tree[no].sum=arr[i];
+    tree[no].max=arr[i];
+    return;
+  }
+  build(esq,i,meio);
+  build(dir,meio+1,j);
+  tree[no] = join(tree[esq],tree[dir]);
+}
+node query(int no,int i,int j,int l,int r){
+  if(l>j || r<i){
+    return nulo;
+  }
+  if(i>=l && j<=r){
+    return tree[no];
+  }
+ 
+  return join(query(esq,i,meio,l,r),query(dir,meio+1,j,l,r));
+}
+ 
+void upd(int no,int i,int j,int k,int v){
+  if(i==j){
+    tree[no].sum=v;
+    tree[no].max=v;
+    arr[i]=v;
+    return;
+  }
+  else if(k<=meio)upd(esq,i,meio,k,v);
+  else upd(dir,meio+1,j,k,v);
+ 
+  tree[no]=join(tree[esq],tree[dir]);
+}
+ 
+void upd_mod(int no,int i,int j,int l,int r,int mod){
+  if (r<i || l>j || tree[no].max<mod){
+    return;
+  }
+  if(i==j){
+    tree[no].sum%=mod;
+    tree[no].max%=mod;
+    arr[i]%=mod;
+    return;
+  }
+  upd_mod(esq,i,meio,l,r,mod);
+  upd_mod(dir,meio+1,j,l,r,mod);
+  tree[no]=join(tree[esq],tree[dir]);
+}
+ 
+ 
+int32_t main(){
+  int n,m;cin>>n>>m;
+  for(int i=1;i<=n;i++){
+    cin>>arr[i];
+  }
+  build(1,1,n);
+  for(int i=0;i<m;i++){
+    int x;cin>>x;
+    if(x==1){
+      int l,r;cin>>l>>r;
+      cout<<query(1,1,n,l,r).sum<<"\n";
+    }
+    else if(x==2){
+      int l,r,x;cin>>l>>r>>x;
+      upd_mod(1,1,n,l,r,x);
+    }
+    else if(x==3){
+      int k,x;cin>>k>>x;
+      upd(1,1,n,k,x);
+    }
+    // for(int i=1;i<=n;i++){
+    //   cout<<arr[i]<<" ";
+    // }
+    // cout<<endl;
+  }
+}
