@@ -1,0 +1,192 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define int long long
+#define esq 2*no
+#define dir 2*no+1
+#define meio (i+j)/2
+#define llINF 1e18
+const int maxn = 2e5+5;
+
+struct node{
+    int max,min,max2,min2,sum,maxc,minc;
+    int lazy = 0;
+    bool nulo = false;
+};
+node NULO;
+node tree[4*maxn];
+int arr[maxn];
+int n,q;
+
+node join(node A,node B){
+    if(A.nulo)return B;
+    if(B.nulo)return A;
+    node res;
+    res.lazy = 0;
+    res.sum=A.sum+B.sum;
+    if(A.max == B.max){
+        res.max=A.max;
+        res.max2 = max(A.max2,B.max2);
+        res.maxc = A.maxc+B.maxc;
+    }
+    else{
+        if(A.max>B.max){
+            res.max=A.max;
+            res.max2=max(A.max2,B.max);
+            res.maxc=A.maxc;
+        }
+        else{
+            res.max=B.max;
+            res.max2=max(B.max2,A.max);
+            res.maxc=B.maxc;
+        }
+    }
+
+    if(A.min == B.min){
+        res.min=A.min;
+        res.min2 = min(A.min2,B.min2);
+        res.minc = A.minc+B.minc;
+    }
+    else{
+        if(A.min<B.min){
+            res.min=A.min;
+            res.min2=min(A.min2,B.min);
+            res.minc=A.minc;
+        }
+        else{
+            res.min=B.min;
+            res.min2=min(B.min2,A.min);
+            res.minc=B.minc;
+        }
+    }
+    return res;
+}
+
+void flush(int no,int i,int j,int new_max,int new_min){
+   int v = tree[no].lazy;
+   if(v){
+        tree[no].sum += (j-i+1)*v;
+        tree[no].max+=v;
+        tree[no].min+=v;
+        if(tree[no].max2!=-llINF)tree[no].max2+=v;
+        if(tree[no].min2!=llINF)tree[no].min2+=v;
+        tree[no].lazy = 0;
+        if(i!=j){
+            tree[esq].lazy+=v;
+            tree[dir].lazy+=v;
+        }
+   }
+   //new_max
+   if(new_max<tree[no].max){
+        tree[no].sum+=tree[no].maxc*(new_max-tree[no].max);
+        if(tree[no].max==tree[no].min){
+            tree[no].min = new_max;
+        }
+        else{
+          if(tree[no].min2==tree[no].max)tree[no].min2=new_max;  
+        }
+        tree[no].max = new_max;
+   }
+
+   //new_min
+   if(new_min>tree[no].min){
+        tree[no].sum+=tree[no].minc*(new_min-tree[no].min);
+        if(tree[no].max==tree[no].min){
+            tree[no].max = new_min;
+        }
+        else{
+          if(tree[no].max2==tree[no].min)tree[no].max2=new_min;  
+        }
+        tree[no].min = new_min;
+   }
+   // cout<<"estou dando flush em "<<no<<" e os valores apos o flush sao:\n"<<tree[no].sum<<" "<<tree[no].max<<" "<<tree[no].min<<endl;
+}
+
+void build(int no=1,int i=0,int j=n-1){
+    if(i==j){
+        tree[no].sum=tree[no].max=tree[no].min=arr[i];
+        tree[no].maxc=tree[no].minc=1;
+        tree[no].max2=-llINF;
+        tree[no].min2=llINF;
+        return;
+    }
+    build(esq,i,meio);
+    build(dir,meio+1,j);
+    tree[no]=join(tree[esq],tree[dir]);
+}
+
+void update_add(int no,int i,int j,int l,int r,int v){
+    if(i!=j){
+        flush(esq,i,meio,tree[no].max,tree[no].min);flush(dir,meio+1,j,tree[no].max,tree[no].min);
+    }
+    if(j<l || i>r)return;
+    if(i>=l && j<=r){
+        tree[no].lazy += v;
+        flush(no,i,j,llINF,-llINF); //flush atualiza o no e passa o lazy pra baixo
+        return;
+    }
+    update_add(esq,i,meio,l,r,v);
+    update_add(dir,meio+1,j,l,r,v);
+    tree[no] = join(tree[esq],tree[dir]);
+}
+
+void update_min(int no,int i,int j,int l,int r,int v){
+    if(i!=j){
+        flush(esq,i,meio,tree[no].max,tree[no].min);flush(dir,meio+1,j,tree[no].max,tree[no].min);
+    }
+    if(j<l || i>r || v>=tree[no].max)return;
+    if(i>=l && j<=r && v> tree[no].max2){
+        flush(no,i,j,v,-llINF); //flush atualiza o no e passa o lazy pra baixo
+        return;
+    }
+    update_min(esq,i,meio,l,r,v);
+    update_min(dir,meio+1,j,l,r,v);
+    tree[no] = join(tree[esq],tree[dir]);
+}
+
+void update_max(int no,int i,int j,int l,int r,int v){
+    if(i!=j){
+        flush(esq,i,meio,tree[no].max,tree[no].min);flush(dir,meio+1,j,tree[no].max,tree[no].min);
+    }
+    if(j<l || i>r || v<=tree[no].min)return;
+    if(i>=l && j<=r && v <tree[no].min2){
+        flush(no,i,j,llINF,v); //flush atualiza o no e passa o lazy pra baixo
+        return;
+    }
+    update_max(esq,i,meio,l,r,v);
+    update_max(dir,meio+1,j,l,r,v);
+    tree[no] = join(tree[esq],tree[dir]);
+}
+
+node query(int no,int i,int j,int l,int r){
+    if(i!=j){
+        flush(esq,i,meio,tree[no].max,tree[no].min);flush(dir,meio+1,j,tree[no].max,tree[no].min);
+    }
+    if(j<l || i>r)return NULO;
+    if(i>=l && j<=r){
+        return tree[no];
+    }
+    return join(query(esq,i,meio,l,r),query(dir,meio+1,j,l,r));
+}
+
+void print(){
+    for(int i=1;i<=9;i++){
+        cout<<i<<" "<<tree[i].lazy<<endl;
+    }
+}
+
+int32_t main(){
+    NULO.nulo=true;
+    cin>>n>>q;
+    for(int i=0;i<n;i++)cin>>arr[i];
+    build();
+    while(q--){
+        int op;cin>>op;
+        int l,r,b;
+        switch(op){
+            case 0:cin>>l>>r>>b;update_min(1,0,n-1,l,r-1,b);break;
+            case 1:cin>>l>>r>>b;update_max(1,0,n-1,l,r-1,b);break;
+            case 2:cin>>l>>r>>b;update_add(1,0,n-1,l,r-1,b);break;
+            case 3:cin>>l>>r;cout<<query(1,0,n-1,l,r-1).sum<<'\n';break;
+        }
+    }
+}
